@@ -47,7 +47,7 @@ int pmc_bgp_rd2str(char *, rd_t *);
 int pmc_bgp_str2rd(rd_t *, char *);
 char *pmc_compose_json(u_int64_t, u_int64_t, u_int8_t, struct pkt_primitives *,
 			struct pkt_bgp_primitives *, struct pkt_legacy_bgp_primitives *,
-			struct pkt_nat_primitives *, struct pkt_mpls_primitives *,
+			struct pkt_nat_primitives *, // struct pkt_mpls_primitives *,
 			struct pkt_tunnel_primitives *, char *,
 			struct pkt_vlen_hdr_primitives *, pm_counter_t, pm_counter_t,
 			pm_counter_t, u_int32_t, struct timeval *, int, int);
@@ -669,14 +669,14 @@ int main(int argc,char **argv)
   struct pkt_bgp_primitives empty_pbgp;
   struct pkt_legacy_bgp_primitives empty_plbgp;
   struct pkt_nat_primitives empty_pnat;
-  struct pkt_mpls_primitives empty_pmpls;
+  /* struct pkt_mpls_primitives empty_pmpls; */
   struct pkt_tunnel_primitives empty_ptun;
   struct pkt_vlen_hdr_primitives empty_pvlen;
   struct query_entry request;
   struct pkt_bgp_primitives *pbgp = NULL;
   struct pkt_legacy_bgp_primitives *plbgp = NULL;
   struct pkt_nat_primitives *pnat = NULL;
-  struct pkt_mpls_primitives *pmpls = NULL;
+  /* struct pkt_mpls_primitives *pmpls = NULL; */
   struct pkt_tunnel_primitives *ptun = NULL;
   struct pkt_vlen_hdr_primitives *pvlen = NULL;
   char *pcust = NULL;
@@ -720,7 +720,7 @@ int main(int argc,char **argv)
   memset(&empty_pbgp, 0, sizeof(struct pkt_bgp_primitives));
   memset(&empty_plbgp, 0, sizeof(struct pkt_legacy_bgp_primitives));
   memset(&empty_pnat, 0, sizeof(struct pkt_nat_primitives));
-  memset(&empty_pmpls, 0, sizeof(struct pkt_mpls_primitives));
+  /* memset(&empty_pmpls, 0, sizeof(struct pkt_mpls_primitives)); */
   memset(&empty_ptun, 0, sizeof(struct pkt_tunnel_primitives));
   memset(&empty_pvlen, 0, sizeof(struct pkt_vlen_hdr_primitives));
   memset(count, 0, sizeof(count));
@@ -992,10 +992,10 @@ int main(int argc,char **argv)
           count_token_int[count_index] = COUNT_INT_PEER_DST_IP;
           what_to_count |= COUNT_PEER_DST_IP;
         }
-        else if (!strcmp(count_token[count_index], "mpls_vpn_rd")) {
-          count_token_int[count_index] = COUNT_INT_MPLS_VPN_RD;
-          what_to_count |= COUNT_MPLS_VPN_RD;
-        }
+        /* else if (!strcmp(count_token[count_index], "mpls_vpn_rd")) { */
+        /*   count_token_int[count_index] = COUNT_INT_MPLS_VPN_RD;      */
+        /*   what_to_count |= COUNT_MPLS_VPN_RD;                        */
+        /* }                                                            */
         else if (!strcmp(count_token[count_index], "post_nat_src_host")) {
           count_token_int[count_index] = COUNT_INT_POST_NAT_SRC_HOST;
           what_to_count_2 |= COUNT_POST_NAT_SRC_HOST;
@@ -1016,18 +1016,18 @@ int main(int argc,char **argv)
           count_token_int[count_index] = COUNT_INT_NAT_EVENT;
           what_to_count_2 |= COUNT_NAT_EVENT;
         }
-        else if (!strcmp(count_token[count_index], "mpls_label_top")) {
-          count_token_int[count_index] = COUNT_INT_MPLS_LABEL_TOP;
-          what_to_count_2 |= COUNT_MPLS_LABEL_TOP;
-        }
-        else if (!strcmp(count_token[count_index], "mpls_label_bottom")) {
-          count_token_int[count_index] = COUNT_INT_MPLS_LABEL_BOTTOM;
-          what_to_count_2 |= COUNT_MPLS_LABEL_BOTTOM;
-        }
-        else if (!strcmp(count_token[count_index], "mpls_stack_depth")) {
-          count_token_int[count_index] = COUNT_INT_MPLS_STACK_DEPTH;
-          what_to_count_2 |= COUNT_MPLS_STACK_DEPTH;
-        }
+        /* else if (!strcmp(count_token[count_index], "mpls_label_top")) {    */
+        /*   count_token_int[count_index] = COUNT_INT_MPLS_LABEL_TOP;         */
+        /*   what_to_count_2 |= COUNT_MPLS_LABEL_TOP;                         */
+        /* }                                                                  */
+        /* else if (!strcmp(count_token[count_index], "mpls_label_bottom")) { */
+        /*   count_token_int[count_index] = COUNT_INT_MPLS_LABEL_BOTTOM;      */
+        /*   what_to_count_2 |= COUNT_MPLS_LABEL_BOTTOM;                      */
+        /* }                                                                  */
+        /* else if (!strcmp(count_token[count_index], "mpls_stack_depth")) {  */
+        /*   count_token_int[count_index] = COUNT_INT_MPLS_STACK_DEPTH;       */
+        /*   what_to_count_2 |= COUNT_MPLS_STACK_DEPTH;                       */
+        /* }                                                                  */
         else if (!strcmp(count_token[count_index], "timestamp_start")) {
           count_token_int[count_index] = COUNT_INT_TIMESTAMP_START;
           what_to_count_2 |= COUNT_TIMESTAMP_START;
@@ -1791,12 +1791,12 @@ int main(int argc,char **argv)
             exit(1);
           }
         }
-        else if (!strcmp(count_token[match_string_index], "mpls_vpn_rd")) {
-	  if (!pmc_bgp_str2rd((rd_t *) &request.pbgp.mpls_vpn_rd, match_string_token)) {
-            printf("ERROR: mpls_vpn_rd: Invalid MPLS VPN RD value: '%s'\n", match_string_token);
-            exit(1);
-          }
-        }
+      /*   else if (!strcmp(count_token[match_string_index], "mpls_vpn_rd")) {                      */
+	  /* if (!pmc_bgp_str2rd((rd_t *) &request.pbgp.mpls_vpn_rd, match_string_token)) {             */
+      /*       printf("ERROR: mpls_vpn_rd: Invalid MPLS VPN RD value: '%s'\n", match_string_token); */
+      /*       exit(1);                                                                             */
+      /*     }                                                                                      */
+      /*   }                                                                                        */
         else if (!strcmp(count_token[match_string_index], "post_nat_src_host")) {
           if (!str_to_addr(match_string_token, &request.pnat.post_nat_src_ip)) {
             printf("ERROR: post_nat_src_host: Invalid IP address: '%s'\n", match_string_token);
@@ -1818,15 +1818,15 @@ int main(int argc,char **argv)
         else if (!strcmp(count_token[match_string_index], "nat_event")) {
           request.pnat.nat_event = atoi(match_string_token);
         }
-        else if (!strcmp(count_token[match_string_index], "mpls_label_top")) {
-	  request.pmpls.mpls_label_top = atoi(match_string_token);
-        }
-        else if (!strcmp(count_token[match_string_index], "mpls_label_bottom")) {
-	  request.pmpls.mpls_label_bottom = atoi(match_string_token);
-        }
-        else if (!strcmp(count_token[match_string_index], "mpls_stack_depth")) {
-          request.pmpls.mpls_stack_depth = atoi(match_string_token);
-        }
+      /*   else if (!strcmp(count_token[match_string_index], "mpls_label_top")) {    */
+	  /* request.pmpls.mpls_label_top = atoi(match_string_token);                    */
+      /*   }                                                                         */
+      /*   else if (!strcmp(count_token[match_string_index], "mpls_label_bottom")) { */
+	  /* request.pmpls.mpls_label_bottom = atoi(match_string_token);                 */
+      /*   }                                                                         */
+      /*   else if (!strcmp(count_token[match_string_index], "mpls_stack_depth")) {  */
+      /*     request.pmpls.mpls_stack_depth = atoi(match_string_token);              */
+      /*   }                                                                         */
         else if (!strcmp(count_token[match_string_index], "tunnel_src_host")) {
           if (!str_to_addr(match_string_token, &request.ptun.tunnel_src_ip)) {
             printf("ERROR: tunnel_src_host: Invalid IP address: '%s'\n", match_string_token);
@@ -2055,8 +2055,8 @@ int main(int argc,char **argv)
       if (extras.off_pkt_nat_primitives) pnat = (struct pkt_nat_primitives *) ((u_char *)elem + extras.off_pkt_nat_primitives);
       else pnat = &empty_pnat;
 
-      if (extras.off_pkt_mpls_primitives) pmpls = (struct pkt_mpls_primitives *) ((u_char *)elem + extras.off_pkt_mpls_primitives);
-      else pmpls = &empty_pmpls;
+      /* if (extras.off_pkt_mpls_primitives) pmpls = (struct pkt_mpls_primitives *) ((u_char *)elem + extras.off_pkt_mpls_primitives); */
+      /* else pmpls = &empty_pmpls;                                                                                                    */
 
       if (extras.off_pkt_tun_primitives) ptun = (struct pkt_tunnel_primitives *) ((u_char *)elem + extras.off_pkt_tun_primitives);
       else ptun = &empty_ptun;
@@ -2071,7 +2071,7 @@ int main(int argc,char **argv)
 	  memcmp(pbgp, &empty_pbgp, sizeof(struct pkt_bgp_primitives)) != 0 ||
 	  memcmp(plbgp, &empty_plbgp, sizeof(struct pkt_legacy_bgp_primitives)) != 0 ||
 	  memcmp(pnat, &empty_pnat, sizeof(struct pkt_nat_primitives)) != 0 ||
-	  memcmp(pmpls, &empty_pmpls, sizeof(struct pkt_mpls_primitives)) != 0 ||
+	  /* memcmp(pmpls, &empty_pmpls, sizeof(struct pkt_mpls_primitives)) != 0 || */
 	  memcmp(ptun, &empty_ptun, sizeof(struct pkt_tunnel_primitives)) != 0 ||
 	  pmc_custom_primitives_registry.len ||
 	  memcmp(pvlen, &empty_pvlen, sizeof(struct pkt_vlen_hdr_primitives)) != 0) {
@@ -2363,12 +2363,12 @@ int main(int argc,char **argv)
 #endif
         }
 
-        if (!have_wtc || (what_to_count & COUNT_MPLS_VPN_RD)) {
-          pmc_bgp_rd2str(rd_str, (rd_t *) &pbgp->mpls_vpn_rd);
+    /*     if (!have_wtc || (what_to_count & COUNT_MPLS_VPN_RD)) {                                        */
+    /*       pmc_bgp_rd2str(rd_str, (rd_t *) &pbgp->mpls_vpn_rd);                                         */
 
-          if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-18s  ", rd_str);
-          else if (want_output & PRINT_OUTPUT_CSV) printf("%s%s", write_sep(sep_ptr, &count), rd_str);
-	}
+    /*       if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-18s  ", rd_str);                         */
+    /*       else if (want_output & PRINT_OUTPUT_CSV) printf("%s%s", write_sep(sep_ptr, &count), rd_str); */
+	/* }                                                                                                  */
 
 	if (!have_wtc || (what_to_count & (COUNT_SRC_HOST|COUNT_SUM_HOST))) {
 	  addr_to_str(ip_address, &acc_elem->primitives.src_ip);
@@ -2608,20 +2608,20 @@ int main(int argc,char **argv)
           else if (want_output & PRINT_OUTPUT_CSV) printf("%s%u", write_sep(sep_ptr, &count), pnat->nat_event);
         }
 
-        if (!have_wtc || (what_to_count_2 & COUNT_MPLS_LABEL_TOP)) {
-          if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-7u         ", pmpls->mpls_label_top);
-          else if (want_output & PRINT_OUTPUT_CSV) printf("%s%u", write_sep(sep_ptr, &count), pmpls->mpls_label_top);
-        }
+        /* if (!have_wtc || (what_to_count_2 & COUNT_MPLS_LABEL_TOP)) {                                                     */
+        /*   if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-7u         ", pmpls->mpls_label_top);                      */
+        /*   else if (want_output & PRINT_OUTPUT_CSV) printf("%s%u", write_sep(sep_ptr, &count), pmpls->mpls_label_top);    */
+        /* }                                                                                                                */
 
-        if (!have_wtc || (what_to_count_2 & COUNT_MPLS_LABEL_BOTTOM)) {
-          if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-7u            ", pmpls->mpls_label_bottom);
-          else if (want_output & PRINT_OUTPUT_CSV) printf("%s%u", write_sep(sep_ptr, &count), pmpls->mpls_label_bottom);
-        }
+        /* if (!have_wtc || (what_to_count_2 & COUNT_MPLS_LABEL_BOTTOM)) {                                                  */
+        /*   if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-7u            ", pmpls->mpls_label_bottom);                */
+        /*   else if (want_output & PRINT_OUTPUT_CSV) printf("%s%u", write_sep(sep_ptr, &count), pmpls->mpls_label_bottom); */
+        /* }                                                                                                                */
 
-        if (!have_wtc || (what_to_count_2 & COUNT_MPLS_STACK_DEPTH)) {
-          if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-2u                ", pmpls->mpls_stack_depth);
-          else if (want_output & PRINT_OUTPUT_CSV) printf("%s%u", write_sep(sep_ptr, &count), pmpls->mpls_stack_depth);
-        }
+        /* if (!have_wtc || (what_to_count_2 & COUNT_MPLS_STACK_DEPTH)) {                                                   */
+        /*   if (want_output & PRINT_OUTPUT_FORMATTED) printf("%-2u                ", pmpls->mpls_stack_depth);             */
+        /*   else if (want_output & PRINT_OUTPUT_CSV) printf("%s%u", write_sep(sep_ptr, &count), pmpls->mpls_stack_depth);  */
+        /* }                                                                                                                */
 
         if (!have_wtc || (what_to_count_2 & COUNT_TUNNEL_SRC_HOST)) {
           addr_to_str(ip_address, &ptun->tunnel_src_ip);
@@ -2765,7 +2765,7 @@ int main(int argc,char **argv)
 	  char *json_str;
 
 	  json_str = pmc_compose_json(what_to_count, what_to_count_2, acc_elem->flow_type,
-				      &acc_elem->primitives, pbgp, plbgp, pnat, pmpls, ptun, pcust, pvlen,
+				      &acc_elem->primitives, pbgp, plbgp, pnat, ptun, pcust, pvlen,
 				      acc_elem->pkt_len, acc_elem->pkt_num, acc_elem->flo_num,
 				      acc_elem->tcp_flags, NULL, want_tstamp_since_epoch, want_tstamp_utc);
 
@@ -3235,7 +3235,7 @@ int pmc_bgp_str2rd(rd_t *output, char *value)
 #ifdef WITH_JANSSON 
 char *pmc_compose_json(u_int64_t wtc, u_int64_t wtc_2, u_int8_t flow_type, struct pkt_primitives *pbase,
 		  struct pkt_bgp_primitives *pbgp, struct pkt_legacy_bgp_primitives *plbgp,
-		  struct pkt_nat_primitives *pnat, struct pkt_mpls_primitives *pmpls,
+		  struct pkt_nat_primitives *pnat, // struct pkt_mpls_primitives *pmpls,
 		  struct pkt_tunnel_primitives *ptun, char *pcust, struct pkt_vlen_hdr_primitives *pvlen,
 		  pm_counter_t bytes_counter, pm_counter_t packet_counter, pm_counter_t flow_counter,
 		  u_int32_t tcp_flags, struct timeval *basetime, int tstamp_since_epoch, int tstamp_utc)
@@ -3423,10 +3423,10 @@ char *pmc_compose_json(u_int64_t wtc, u_int64_t wtc_2, u_int8_t flow_type, struc
 
   if (wtc & COUNT_OUT_IFACE) json_object_set_new_nocheck(obj, "iface_out", json_integer((json_int_t)pbase->ifindex_out));
 
-  if (wtc & COUNT_MPLS_VPN_RD) {
-    pmc_bgp_rd2str(rd_str, &pbgp->mpls_vpn_rd);
-    json_object_set_new_nocheck(obj, "mpls_vpn_rd", json_string(rd_str));
-  }
+  /* if (wtc & COUNT_MPLS_VPN_RD) {                                          */
+  /*   pmc_bgp_rd2str(rd_str, &pbgp->mpls_vpn_rd);                           */
+  /*   json_object_set_new_nocheck(obj, "mpls_vpn_rd", json_string(rd_str)); */
+  /* }                                                                       */
 
   if (wtc & COUNT_SRC_HOST) {
     addr_to_str(src_host, &pbase->src_ip);
@@ -3531,11 +3531,11 @@ char *pmc_compose_json(u_int64_t wtc, u_int64_t wtc_2, u_int8_t flow_type, struc
 
   if (wtc_2 & COUNT_NAT_EVENT) json_object_set_new_nocheck(obj, "nat_event", json_integer((json_int_t)pnat->nat_event));
 
-  if (wtc_2 & COUNT_MPLS_LABEL_TOP) json_object_set_new_nocheck(obj, "mpls_label_top", json_integer((json_int_t)pmpls->mpls_label_top));
+  /* if (wtc_2 & COUNT_MPLS_LABEL_TOP) json_object_set_new_nocheck(obj, "mpls_label_top", json_integer((json_int_t)pmpls->mpls_label_top));          */
 
-  if (wtc_2 & COUNT_MPLS_LABEL_BOTTOM) json_object_set_new_nocheck(obj, "mpls_label_bottom", json_integer((json_int_t)pmpls->mpls_label_bottom));
+  /* if (wtc_2 & COUNT_MPLS_LABEL_BOTTOM) json_object_set_new_nocheck(obj, "mpls_label_bottom", json_integer((json_int_t)pmpls->mpls_label_bottom)); */
 
-  if (wtc_2 & COUNT_MPLS_STACK_DEPTH) json_object_set_new_nocheck(obj, "mpls_stack_depth", json_integer((json_int_t)pmpls->mpls_stack_depth));
+  /* if (wtc_2 & COUNT_MPLS_STACK_DEPTH) json_object_set_new_nocheck(obj, "mpls_stack_depth", json_integer((json_int_t)pmpls->mpls_stack_depth));    */
 
   if (wtc_2 & COUNT_TUNNEL_SRC_HOST) {
     addr_to_str(src_host, &ptun->tunnel_src_ip);
@@ -3610,7 +3610,7 @@ char *pmc_compose_json(u_int64_t wtc, u_int64_t wtc_2, u_int8_t flow_type, struc
 #else
 char *pmc_compose_json(u_int64_t wtc, u_int64_t wtc_2, u_int8_t flow_type, struct pkt_primitives *pbase,
                   struct pkt_bgp_primitives *pbgp, struct pkt_legacy_bgp_primitives *plbgp,
-		  struct pkt_nat_primitives *pnat, struct pkt_mpls_primitives *pmpls,
+		  struct pkt_nat_primitives *pnat, // struct pkt_mpls_primitives *pmpls,
 		  struct pkt_tunnel_primitives *ptun, char *pcust, struct pkt_vlen_hdr_primitives *pvlen,
 		  pm_counter_t bytes_counter, pm_counter_t packet_counter, pm_counter_t flow_counter,
 		  u_int32_t tcp_flags, struct timeval *basetime, int tstamp_since_epoch, int tstamp_utc)

@@ -235,7 +235,7 @@ typedef struct {
 #include "xflow_status.h"
 #include "log.h"
 #include "once.h"
-#include "mpls.h"
+// #include "mpls.h"
 
 /*
  * htonvl(): host to network (byte ordering) variable length
@@ -354,7 +354,7 @@ EXT void null_handler(const struct pcap_pkthdr *, register struct packet_ptrs *)
 EXT void eth_handler(const struct pcap_pkthdr *, register struct packet_ptrs *);
 EXT void fddi_handler(const struct pcap_pkthdr *, register struct packet_ptrs *);
 EXT void tr_handler(const struct pcap_pkthdr *, register struct packet_ptrs *);
-EXT u_int16_t mpls_handler(u_char *, u_int16_t *, u_int16_t *, register struct packet_ptrs *);
+// EXT u_int16_t mpls_handler(u_char *, u_int16_t *, u_int16_t *, register struct packet_ptrs *);
 EXT void ppp_handler(const struct pcap_pkthdr *, register struct packet_ptrs *);
 EXT void ieee_802_11_handler(const struct pcap_pkthdr *, register struct packet_ptrs *);
 EXT void sll_handler(const struct pcap_pkthdr *, register struct packet_ptrs *);
