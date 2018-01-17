@@ -548,8 +548,7 @@ int main(int argc,char **argv, char **envp)
         list->cfg.what_to_count |= COUNT_OUT_IFACE;
 	if ((list->cfg.what_to_count & (COUNT_STD_COMM|COUNT_EXT_COMM|COUNT_LOCAL_PREF|COUNT_MED|COUNT_AS_PATH|
                                        COUNT_PEER_SRC_AS|COUNT_PEER_DST_AS|COUNT_PEER_SRC_IP|COUNT_SRC_STD_COMM|
-				       COUNT_SRC_EXT_COMM|COUNT_SRC_AS_PATH|COUNT_SRC_MED|COUNT_SRC_LOCAL_PREF|
-				       COUNT_MPLS_VPN_RD)) ||
+				       COUNT_SRC_EXT_COMM|COUNT_SRC_AS_PATH|COUNT_SRC_MED|COUNT_SRC_LOCAL_PREF)) ||
 	    (list->cfg.what_to_count_2 & (COUNT_LRG_COMM|COUNT_SRC_LRG_COMM))) {
 	  Log(LOG_ERR, "ERROR ( %s/core ): 'src_as', 'dst_as' and 'peer_dst_ip' are currently the only BGP-related primitives supported within the 'nfprobe' plugin.\n", config.name);
 	  exit(1);
@@ -601,8 +600,7 @@ int main(int argc,char **argv, char **envp)
 	}
         if ((list->cfg.what_to_count & (COUNT_STD_COMM|COUNT_EXT_COMM|COUNT_LOCAL_PREF|COUNT_MED|COUNT_AS_PATH|
                                        COUNT_PEER_SRC_AS|COUNT_PEER_DST_AS|COUNT_PEER_SRC_IP|COUNT_SRC_STD_COMM|
-				       COUNT_SRC_EXT_COMM|COUNT_SRC_AS_PATH|COUNT_SRC_MED|COUNT_SRC_LOCAL_PREF|
-				       COUNT_MPLS_VPN_RD)) ||
+				       COUNT_SRC_EXT_COMM|COUNT_SRC_AS_PATH|COUNT_SRC_MED|COUNT_SRC_LOCAL_PREF)) ||
 	    (list->cfg.what_to_count_2 & (COUNT_LRG_COMM|COUNT_SRC_LRG_COMM))) {
           Log(LOG_ERR, "ERROR ( %s/core ): 'src_as', 'dst_as' and 'peer_dst_ip' are currently the only BGP-related primitives supported within the 'sfprobe' plugin.\n", config.name);
           exit(1);
@@ -626,10 +624,6 @@ int main(int argc,char **argv, char **envp)
                         COUNT_POST_NAT_SRC_PORT|COUNT_POST_NAT_DST_PORT|COUNT_NAT_EVENT|
                         COUNT_TIMESTAMP_START|COUNT_TIMESTAMP_END|COUNT_TIMESTAMP_ARRIVAL))
           list->cfg.data_type |= PIPE_TYPE_NAT;
-
-        if (list->cfg.what_to_count_2 & (COUNT_MPLS_LABEL_TOP|COUNT_MPLS_LABEL_BOTTOM|
-                        COUNT_MPLS_STACK_DEPTH))
-          list->cfg.data_type |= PIPE_TYPE_MPLS;
 
 	if (list->cfg.what_to_count_2 & (COUNT_TUNNEL_SRC_HOST|COUNT_TUNNEL_DST_HOST|
 			COUNT_TUNNEL_IP_PROTO|COUNT_TUNNEL_IP_TOS))
