@@ -295,19 +295,6 @@ inline static u_int32_t labelStackEncodingLength(SFLLabelStack *labelStack) {
   return 4 + (4 * labelStack->depth);
 }
 
-inline static void putMpls(SFLReceiver *receiver, SFLExtended_mpls *mpls)
-{
-  putAddress(receiver, &mpls->nextHop);
-  putLabelStack(receiver, &mpls->in_stack);
-  putLabelStack(receiver, &mpls->out_stack);
-}
-
-inline static u_int32_t mplsEncodingLength(SFLExtended_mpls *mpls) {
-  return addressEncodingLength(&mpls->nextHop)
-    + labelStackEncodingLength(&mpls->in_stack)
-    + labelStackEncodingLength(&mpls->out_stack);
-}
-
 inline static void putNat(SFLReceiver *receiver, SFLExtended_nat *nat)
 {
   putAddress(receiver, &nat->src);
@@ -317,47 +304,6 @@ inline static void putNat(SFLReceiver *receiver, SFLExtended_nat *nat)
 inline static u_int32_t natEncodingLength(SFLExtended_nat *nat) {
   return addressEncodingLength(&nat->src)
     + addressEncodingLength(&nat->dst);
-}
-
-inline static void putMplsTunnel(SFLReceiver *receiver, SFLExtended_mpls_tunnel *tunnel)
-{
-  putString(receiver, &tunnel->tunnel_lsp_name);
-  putNet32(receiver, tunnel->tunnel_id);
-  putNet32(receiver, tunnel->tunnel_cos);
-}
-
-inline static u_int32_t mplsTunnelEncodingLength(SFLExtended_mpls_tunnel *tunnel) {
-  return stringEncodingLength(&tunnel->tunnel_lsp_name) + 8;
-}
-
-inline static void putMplsVc(SFLReceiver *receiver, SFLExtended_mpls_vc *vc)
-{
-  putString(receiver, &vc->vc_instance_name);
-  putNet32(receiver, vc->vll_vc_id);
-  putNet32(receiver, vc->vc_label_cos);
-}
-
-inline static u_int32_t mplsVcEncodingLength(SFLExtended_mpls_vc *vc) {
-  return stringEncodingLength( &vc->vc_instance_name) + 8;
-}
-
-inline static void putMplsFtn(SFLReceiver *receiver, SFLExtended_mpls_FTN *ftn)
-{
-  putString(receiver, &ftn->mplsFTNDescr);
-  putNet32(receiver, ftn->mplsFTNMask);
-}
-
-inline static u_int32_t mplsFtnEncodingLength(SFLExtended_mpls_FTN *ftn) {
-  return stringEncodingLength( &ftn->mplsFTNDescr) + 4;
-}
-
-inline static void putMplsLdpFec(SFLReceiver *receiver, SFLExtended_mpls_LDP_FEC *ldpfec)
-{
-  putNet32(receiver, ldpfec->mplsFecAddrPrefixLength);
-}
-
-inline static u_int32_t mplsLdpFecEncodingLength(SFLExtended_mpls_LDP_FEC *ldpfec) {
-  return 4;
 }
 
 inline static void putVlanTunnel(SFLReceiver *receiver, SFLExtended_vlan_tunnel *vlanTunnel)
