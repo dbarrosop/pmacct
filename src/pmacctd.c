@@ -790,7 +790,7 @@ int main(int argc,char **argv, char **envp)
 
           device[device_idx].active = TRUE;
           device[device_idx].str = token;
-	  device[device_idx].id = jhash(device[device_idx].str, strlen(device[device_idx].str), 0);
+		  device[device_idx].id = if_nametoindex(device[device_idx].str);
           device_idx++;
 	}
 	else Log(LOG_WARNING, "WARN ( %s/core ): [%s] do_pcap_open(): giving up after too many attempts.\n", config.name, token);
