@@ -410,18 +410,6 @@ void evaluate_packet_handlers()
       }
     }
 
-    if (channels_list[index].aggregation & COUNT_MPLS_VPN_RD) {
-      if (config.nfacctd_flow_to_rd_map) {
-        channels_list[index].phandler[primitives] = mpls_vpn_rd_frommap_handler;
-        primitives++;
-      } 
-
-      if (config.acct_type == ACCT_NF) {
-        channels_list[index].phandler[primitives] = NF_mpls_vpn_id_handler;
-        primitives++;
-      }
-    }
-
     if (channels_list[index].aggregation & COUNT_PEER_SRC_AS) {
       if (config.acct_type == ACCT_PM && config.nfacctd_bgp) {
 	if (config.nfacctd_bgp_peer_as_src_type & BGP_SRC_PRIMITIVES_MAP) {
@@ -660,27 +648,6 @@ void evaluate_packet_handlers()
 
     if (channels_list[index].aggregation_2 & COUNT_TUNNEL_IP_TOS) {
       if (config.acct_type == ACCT_SF) channels_list[index].phandler[primitives] = SF_tunnel_ip_tos_handler;
-      else primitives--;
-      primitives++;
-    }
-
-    if (channels_list[index].aggregation_2 & COUNT_MPLS_LABEL_TOP) {
-      if (config.acct_type == ACCT_PM) channels_list[index].phandler[primitives] = mpls_label_top_handler;
-      else if (config.acct_type == ACCT_NF) channels_list[index].phandler[primitives] = NF_mpls_label_top_handler;
-      else primitives--;
-      primitives++;
-    }
-
-    if (channels_list[index].aggregation_2 & COUNT_MPLS_LABEL_BOTTOM) {
-      if (config.acct_type == ACCT_PM) channels_list[index].phandler[primitives] = mpls_label_bottom_handler;
-      else if (config.acct_type == ACCT_NF) channels_list[index].phandler[primitives] = NF_mpls_label_bottom_handler;
-      else primitives--;
-      primitives++;
-    }
-
-    if (channels_list[index].aggregation_2 & COUNT_MPLS_STACK_DEPTH) {
-      if (config.acct_type == ACCT_PM) channels_list[index].phandler[primitives] = mpls_stack_depth_handler;
-      else if (config.acct_type == ACCT_NF) channels_list[index].phandler[primitives] = NF_mpls_stack_depth_handler;
       else primitives--;
       primitives++;
     }
@@ -931,45 +898,6 @@ void etype_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs,
 }
 #endif
 
-void mpls_label_top_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct pkt_mpls_primitives *pmpls = (struct pkt_mpls_primitives *) ((*data) + chptr->extras.off_pkt_mpls_primitives);
-  u_int32_t *label = (u_int32_t *) pptrs->mpls_ptr;
-
-  if (label) pmpls->mpls_label_top = MPLS_LABEL(ntohl(*label));
-}
-
-void mpls_label_bottom_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct pkt_mpls_primitives *pmpls = (struct pkt_mpls_primitives *) ((*data) + chptr->extras.off_pkt_mpls_primitives);
-  u_int32_t lvalue = 0, *label = (u_int32_t *) pptrs->mpls_ptr;
-
-  if (label) {
-    do {
-      lvalue = ntohl(*label);
-      label += 4;
-    } while (!MPLS_STACK(lvalue));
-
-    pmpls->mpls_label_bottom = MPLS_LABEL(lvalue);
-  }
-}
-
-void mpls_stack_depth_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct pkt_mpls_primitives *pmpls = (struct pkt_mpls_primitives *) ((*data) + chptr->extras.off_pkt_mpls_primitives);
-  u_int32_t lvalue = 0, *label = (u_int32_t *) pptrs->mpls_ptr;
-
-  if (label) {
-    do {
-      lvalue = ntohl(*label);
-      label += 4;
-      pmpls->mpls_stack_depth++;
-    } while (!MPLS_STACK(lvalue));
-  }
-}
 
 void bgp_src_nmask_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
 {
@@ -1374,7 +1302,6 @@ void nfprobe_extras_handler(struct channels_list_entry *chptr, struct packet_ptr
 
   --pdata; /* Bringing back to original place */
 
-  if (pptrs->mpls_ptr) memcpy(&pextras->mpls_top_label, pptrs->mpls_ptr, 4);
   if (pptrs->l4_proto == IPPROTO_TCP) pextras->tcp_flags = pptrs->tcp_flags;
 }
 
@@ -1400,14 +1327,6 @@ void sampling_rate_handler(struct channels_list_entry *chptr, struct packet_ptrs
 
   if (config.sfacctd_renormalize)
     pdata->primitives.sampling_rate = 1; /* already renormalized */
-}
-
-void mpls_vpn_rd_frommap_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct pkt_bgp_primitives *pbgp = (struct pkt_bgp_primitives *) ((*data) + chptr->extras.off_pkt_bgp_primitives);
-
-  if (pbgp && pptrs->bitr) memcpy(&pbgp->mpls_vpn_rd, &pptrs->bitr, sizeof(rd_t));
 }
 
 void timestamp_start_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
@@ -2124,10 +2043,6 @@ void NF_peer_dst_ip_handler(struct channels_list_entry *chptr, struct packet_ptr
       memcpy(&pbgp->peer_dst_ip.address.ipv4, pptrs->f_data+tpl->tpl[NF9_BGP_IPV4_NEXT_HOP].off, MIN(tpl->tpl[NF9_BGP_IPV4_NEXT_HOP].len, 4));
       pbgp->peer_dst_ip.family = AF_INET;
     }
-    else if (tpl->tpl[NF9_MPLS_TOP_LABEL_ADDR].len) {
-      memcpy(&pbgp->peer_dst_ip.address.ipv4, pptrs->f_data+tpl->tpl[NF9_MPLS_TOP_LABEL_ADDR].off, MIN(tpl->tpl[NF9_MPLS_TOP_LABEL_ADDR].len, 4));
-      pbgp->peer_dst_ip.family = AF_INET;
-    }
     else if (tpl->tpl[NF9_IPV4_NEXT_HOP].len) {
       if (use_ip_next_hop) {
         memcpy(&pbgp->peer_dst_ip.address.ipv4, pptrs->f_data+tpl->tpl[NF9_IPV4_NEXT_HOP].off, MIN(tpl->tpl[NF9_IPV4_NEXT_HOP].len, 4));
@@ -2137,10 +2052,6 @@ void NF_peer_dst_ip_handler(struct channels_list_entry *chptr, struct packet_ptr
 #if defined ENABLE_IPV6
     else if (tpl->tpl[NF9_BGP_IPV6_NEXT_HOP].len) {
       memcpy(&pbgp->peer_dst_ip.address.ipv6, pptrs->f_data+tpl->tpl[NF9_BGP_IPV6_NEXT_HOP].off, MIN(tpl->tpl[NF9_BGP_IPV6_NEXT_HOP].len, 16));
-      pbgp->peer_dst_ip.family = AF_INET6;
-    }
-    else if (tpl->tpl[NF9_MPLS_TOP_LABEL_IPV6_ADDR].len) {
-      memcpy(&pbgp->peer_dst_ip.address.ipv6, pptrs->f_data+tpl->tpl[NF9_MPLS_TOP_LABEL_IPV6_ADDR].off, MIN(tpl->tpl[NF9_MPLS_TOP_LABEL_IPV6_ADDR].len, 16));
       pbgp->peer_dst_ip.family = AF_INET6;
     }
     else if (tpl->tpl[NF9_IPV6_NEXT_HOP].len) {
@@ -3526,107 +3437,6 @@ void NF_nat_event_handler(struct channels_list_entry *chptr, struct packet_ptrs 
   }
 }
 
-void NF_mpls_label_top_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct struct_header_v8 *hdr = (struct struct_header_v8 *) pptrs->f_header;
-  struct template_cache_entry *tpl = (struct template_cache_entry *) pptrs->f_tpl;
-  struct pkt_mpls_primitives *pmpls = (struct pkt_mpls_primitives *) ((*data) + chptr->extras.off_pkt_mpls_primitives);
-
-  switch(hdr->version) {
-  case 10:
-  case 9:
-    if (tpl->tpl[NF9_MPLS_LABEL_1].len == 3)
-      pmpls->mpls_label_top = decode_mpls_label(pptrs->f_data+tpl->tpl[NF9_MPLS_LABEL_1].off);
-    break;
-  default:
-    break;
-  }
-}
-
-void NF_mpls_label_bottom_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct struct_header_v8 *hdr = (struct struct_header_v8 *) pptrs->f_header;
-  struct template_cache_entry *tpl = (struct template_cache_entry *) pptrs->f_tpl;
-  struct pkt_mpls_primitives *pmpls = (struct pkt_mpls_primitives *) ((*data) + chptr->extras.off_pkt_mpls_primitives);
-  int label_idx;
-
-  switch(hdr->version) {
-  case 10:
-  case 9:
-    for (label_idx = NF9_MPLS_LABEL_1; label_idx <= NF9_MPLS_LABEL_9; label_idx++) { 
-      if (tpl->tpl[label_idx].len == 3 && check_bosbit(pptrs->f_data+tpl->tpl[label_idx].off)) {
-        pmpls->mpls_label_bottom = decode_mpls_label(pptrs->f_data+tpl->tpl[label_idx].off);
-	break;
-      } 
-    }
-    break;
-  default:
-    break;
-  }
-}
-
-void NF_mpls_stack_depth_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct struct_header_v8 *hdr = (struct struct_header_v8 *) pptrs->f_header;
-  struct template_cache_entry *tpl = (struct template_cache_entry *) pptrs->f_tpl;
-  struct pkt_mpls_primitives *pmpls = (struct pkt_mpls_primitives *) ((*data) + chptr->extras.off_pkt_mpls_primitives);
-  int label_idx, last_label_value = 0, stack_depth, bosbit_found = FALSE;
-
-  switch(hdr->version) {
-  case 10:
-  case 9:
-    for (label_idx = NF9_MPLS_LABEL_1, stack_depth = 0; label_idx <= NF9_MPLS_LABEL_9; label_idx++) {
-      if (tpl->tpl[label_idx].len == 3) {
-	stack_depth++;
-	last_label_value = decode_mpls_label(pptrs->f_data+tpl->tpl[label_idx].off); 
-	if (check_bosbit(pptrs->f_data+tpl->tpl[label_idx].off)) {
-	  bosbit_found = TRUE;
-	  break;
-	}
-      }
-    }
-
-    if (last_label_value || bosbit_found) pmpls->mpls_stack_depth = stack_depth;
-
-    break;
-  default:
-    break;
-  }
-}
-
-void NF_mpls_vpn_id_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
-{
-  struct pkt_data *pdata = (struct pkt_data *) *data;
-  struct struct_header_v8 *hdr = (struct struct_header_v8 *) pptrs->f_header;
-  struct template_cache_entry *tpl = (struct template_cache_entry *) pptrs->f_tpl;
-  struct pkt_bgp_primitives *pbgp = (struct pkt_bgp_primitives *) ((*data) + chptr->extras.off_pkt_bgp_primitives); 
-  int vrfid = FALSE;
-
-  switch(hdr->version) {
-  case 10:
-  case 9:
-    if (tpl->tpl[NF9_INGRESS_VRFID].len && !pbgp->mpls_vpn_rd.val) {
-      memcpy(&pbgp->mpls_vpn_rd.val, pptrs->f_data+tpl->tpl[NF9_INGRESS_VRFID].off, MIN(tpl->tpl[NF9_INGRESS_VRFID].len, 4));
-      vrfid = TRUE;
-    }
-
-    if (tpl->tpl[NF9_EGRESS_VRFID].len && !pbgp->mpls_vpn_rd.val) {
-      memcpy(&pbgp->mpls_vpn_rd.val, pptrs->f_data+tpl->tpl[NF9_EGRESS_VRFID].off, MIN(tpl->tpl[NF9_EGRESS_VRFID].len, 4));
-      vrfid = TRUE;
-    }
-
-    if (vrfid) {
-      pbgp->mpls_vpn_rd.val = ntohl(pbgp->mpls_vpn_rd.val);
-      if (pbgp->mpls_vpn_rd.val) pbgp->mpls_vpn_rd.type = RD_TYPE_VRFID;
-    }
-    break;
-  default:
-    break;
-  }
-}
 
 void NF_class_handler(struct channels_list_entry *chptr, struct packet_ptrs *pptrs, char **data)
 {
