@@ -460,12 +460,6 @@ static int computeFlowSampleSize(SFLReceiver *receiver, SFL_FLOW_SAMPLE_TYPE *fs
     case SFLFLOW_EX_GATEWAY: elemSiz = gatewayEncodingLength(&elem->flowType.gateway); break;
     case SFLFLOW_EX_USER: elemSiz = userEncodingLength(&elem->flowType.user); break;
     case SFLFLOW_EX_URL: elemSiz = urlEncodingLength(&elem->flowType.url); break;
-    case SFLFLOW_EX_MPLS: elemSiz = mplsEncodingLength(&elem->flowType.mpls); break;
-    case SFLFLOW_EX_NAT: elemSiz = natEncodingLength(&elem->flowType.nat); break;
-    case SFLFLOW_EX_MPLS_TUNNEL: elemSiz = mplsTunnelEncodingLength(&elem->flowType.mpls_tunnel); break;
-    case SFLFLOW_EX_MPLS_VC: elemSiz = mplsVcEncodingLength(&elem->flowType.mpls_vc); break;
-    case SFLFLOW_EX_MPLS_FTN: elemSiz = mplsFtnEncodingLength(&elem->flowType.mpls_ftn); break;
-    case SFLFLOW_EX_MPLS_LDP_FEC: elemSiz = mplsLdpFecEncodingLength(&elem->flowType.mpls_ldp_fec); break;
     case SFLFLOW_EX_VLAN_TUNNEL: elemSiz = vlanTunnelEncodingLength(&elem->flowType.vlan_tunnel); break;
     case SFLFLOW_EX_CLASS: elemSiz = MAX_PROTOCOL_LEN; break;
     case SFLFLOW_EX_CLASS2: elemSiz = 8; break;
@@ -589,12 +583,6 @@ int sfl_receiver_writeFlowSample(SFLReceiver *receiver, SFL_FLOW_SAMPLE_TYPE *fs
     case SFLFLOW_EX_GATEWAY: putGateway(receiver, &elem->flowType.gateway); break;
     case SFLFLOW_EX_USER: putUser(receiver, &elem->flowType.user); break;
     case SFLFLOW_EX_URL: putUrl(receiver, &elem->flowType.url); break;
-    case SFLFLOW_EX_MPLS: putMpls(receiver, &elem->flowType.mpls); break;
-    case SFLFLOW_EX_NAT: putNat(receiver, &elem->flowType.nat); break;
-    case SFLFLOW_EX_MPLS_TUNNEL: putMplsTunnel(receiver, &elem->flowType.mpls_tunnel); break;
-    case SFLFLOW_EX_MPLS_VC: putMplsVc(receiver, &elem->flowType.mpls_vc); break;
-    case SFLFLOW_EX_MPLS_FTN: putMplsFtn(receiver, &elem->flowType.mpls_ftn); break;
-    case SFLFLOW_EX_MPLS_LDP_FEC: putMplsLdpFec(receiver, &elem->flowType.mpls_ldp_fec); break;
     case SFLFLOW_EX_VLAN_TUNNEL: putVlanTunnel(receiver, &elem->flowType.vlan_tunnel); break;
     case SFLFLOW_EX_CLASS: putClass(receiver, &elem->flowType.class); break;
     case SFLFLOW_EX_CLASS2: putClass2(receiver, &elem->flowType.ndpi_class); break;
